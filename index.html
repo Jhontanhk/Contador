@@ -15,7 +15,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 24px;
       padding: 24px;
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
       color: #fff;
@@ -24,6 +24,34 @@
     }
     h1 { font-size: 1.6rem; font-weight: 600; }
     .fecha { font-size: 0.95rem; opacity: 0.85; }
+
+    /* Letrero y corazón */
+    .zona-corazon { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .letrero {
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+    .corazon {
+      font-size: 3.5rem;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation; /* evita el zoom con doble toque en iPhone */
+      animation: latido 1.2s infinite;
+    }
+    .corazon.toque { animation: none; transform: scale(1.4); transition: transform 0.1s; }
+    @keyframes latido {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .puntos { display: flex; gap: 6px; height: 10px; }
+    .punto { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); }
+    .punto.lleno { background: #fff; }
+
+    /* Contador */
     .contador {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -38,29 +66,61 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
-    .numero {
-      font-size: 3rem;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
+    .numero { font-size: 3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .etiqueta { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
+
+    /* Pantalla del día */
+    .final { display: none; flex-direction: column; align-items: center; gap: 18px; }
+    .final p { font-size: 1.8rem; font-weight: 700; }
+    .final img {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
-    .etiqueta {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      opacity: 0.85;
+
+    /* Foto al tocar el corazón */
+    .ventana {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+      z-index: 10;
     }
-    .corazon { font-size: 2.5rem; animation: latido 1.2s infinite; }
-    @keyframes latido {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
+    .ventana.visible { display: flex; animation: aparecer 0.4s ease; }
+    .ventana img {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(247, 37, 133, 0.5);
     }
-    .final { font-size: 1.8rem; font-weight: 700; display: none; }
+    .ventana span { font-size: 0.9rem; opacity: 0.8; }
+    @keyframes aparecer {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
-  <div class="corazon">❤️</div>
-  <h1>Falta poco para vernos</h1>
-  <p class="fecha">26 de diciembre de 2026 · 6:00 a. m.</p>
+  <div class="zona-corazon">
+    <div class="letrero">Toca tres veces el corazón 💌</div>
+    <div class="corazon" id="corazon">❤️</div>
+    <div class="puntos">
+      <div class="punto" id="p1"></div>
+      <div class="punto" id="p2"></div>
+      <div class="punto" id="p3"></div>
+    </div>
+  </div>
+
+  <div id="cuenta">
+    <h1>Falta poco para vernos</h1>
+    <p class="fecha">26 de diciembre de 2026 · 6:00 a. m.</p>
+  </div>
 
   <div class="contador" id="contador">
     <div class="caja"><div class="numero" id="dias">0</div><div class="etiqueta">Días</div></div>
@@ -69,9 +129,19 @@
     <div class="caja"><div class="numero" id="segundos">00</div><div class="etiqueta">Segundos</div></div>
   </div>
 
-  <p class="final" id="final">¡Llegó el día! 🎉❤️</p>
+  <div class="final" id="final">
+    <p>¡Llegó el día! 🎉❤️</p>
+    <!-- Si no subes final.jpg, usa foto.jpg -->
+    <img src="final.jpg" alt="Nosotros" onerror="this.onerror=null; this.src='foto.jpg';">
+  </div>
+
+  <div class="ventana" id="ventana">
+    <img src="foto.jpg" alt="Nuestra foto">
+    <span>Toca en cualquier parte para cerrar</span>
+  </div>
 
   <script>
+    // ---------- Contador ----------
     // Fecha fija en hora de Colombia (UTC-5), así funciona igual en cualquier celular
     const destino = new Date("2026-12-26T06:00:00-05:00").getTime();
 
@@ -82,7 +152,8 @@
 
       if (resta <= 0) {
         document.getElementById("contador").style.display = "none";
-        document.getElementById("final").style.display = "block";
+        document.getElementById("cuenta").style.display = "none";
+        document.getElementById("final").style.display = "flex";
         clearInterval(intervalo);
         return;
       }
@@ -98,8 +169,40 @@
       document.getElementById("segundos").textContent = dosDigitos(segundos);
     }
 
-    actualizar();
     const intervalo = setInterval(actualizar, 1000);
+    actualizar();
+
+    // ---------- Tres toques al corazón ----------
+    const corazon = document.getElementById("corazon");
+    const ventana = document.getElementById("ventana");
+    const puntos = ["p1", "p2", "p3"].map(id => document.getElementById(id));
+    let toques = 0;
+    let reinicio;
+
+    function pintarPuntos() {
+      puntos.forEach((p, i) => p.classList.toggle("lleno", i < toques));
+    }
+
+    corazon.addEventListener("click", () => {
+      toques++;
+      pintarPuntos();
+
+      corazon.classList.add("toque");
+      setTimeout(() => corazon.classList.remove("toque"), 150);
+
+      // Si pasan 2 segundos sin tocar, vuelve a empezar
+      clearTimeout(reinicio);
+      reinicio = setTimeout(() => { toques = 0; pintarPuntos(); }, 2000);
+
+      if (toques >= 3) {
+        clearTimeout(reinicio);
+        ventana.classList.add("visible");
+        toques = 0;
+        setTimeout(pintarPuntos, 400);
+      }
+    });
+
+    ventana.addEventListener("click", () => ventana.classList.remove("visible"));
   </script>
 </body>
 </html>
