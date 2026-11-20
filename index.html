@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Contador">
+  <title>Para vernos ❤️</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      color: #fff;
+      background: linear-gradient(160deg, #2b1055 0%, #7b2ff7 50%, #f72585 100%);
+      text-align: center;
+    }
+    h1 { font-size: 1.6rem; font-weight: 600; }
+    .fecha { font-size: 0.95rem; opacity: 0.85; }
+    .contador {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .caja {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 20px 10px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .numero {
+      font-size: 3rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .etiqueta {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.85;
+    }
+    .corazon { font-size: 2.5rem; animation: latido 1.2s infinite; }
+    @keyframes latido {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .final { font-size: 1.8rem; font-weight: 700; display: none; }
+  </style>
+</head>
+<body>
+  <div class="corazon">❤️</div>
+  <h1>Falta poco para vernos</h1>
+  <p class="fecha">26 de diciembre de 2026 · 6:00 a. m.</p>
+
+  <div class="contador" id="contador">
+    <div class="caja"><div class="numero" id="dias">0</div><div class="etiqueta">Días</div></div>
+    <div class="caja"><div class="numero" id="horas">00</div><div class="etiqueta">Horas</div></div>
+    <div class="caja"><div class="numero" id="minutos">00</div><div class="etiqueta">Minutos</div></div>
+    <div class="caja"><div class="numero" id="segundos">00</div><div class="etiqueta">Segundos</div></div>
+  </div>
+
+  <p class="final" id="final">¡Llegó el día! 🎉❤️</p>
+
+  <script>
+    // Fecha fija en hora de Colombia (UTC-5), así funciona igual en cualquier celular
+    const destino = new Date("2026-12-26T06:00:00-05:00").getTime();
+
+    function dosDigitos(n) { return String(n).padStart(2, "0"); }
+
+    function actualizar() {
+      const resta = destino - Date.now();
+
+      if (resta <= 0) {
+        document.getElementById("contador").style.display = "none";
+        document.getElementById("final").style.display = "block";
+        clearInterval(intervalo);
+        return;
+      }
+
+      const dias = Math.floor(resta / 86400000);
+      const horas = Math.floor((resta % 86400000) / 3600000);
+      const minutos = Math.floor((resta % 3600000) / 60000);
+      const segundos = Math.floor((resta % 60000) / 1000);
+
+      document.getElementById("dias").textContent = dias;
+      document.getElementById("horas").textContent = dosDigitos(horas);
+      document.getElementById("minutos").textContent = dosDigitos(minutos);
+      document.getElementById("segundos").textContent = dosDigitos(segundos);
+    }
+
+    actualizar();
+    const intervalo = setInterval(actualizar, 1000);
+  </script>
+</body>
+</html>
