@@ -11,32 +11,39 @@
   <title>Te amo ❤️</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
     body {
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh; /* alto real de la pantalla del celular */
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 24px;
-      padding: 24px;
+      justify-content: space-evenly;
+      gap: 1.2vh;
+      /* deja libre la zona de la hora/notch arriba y la barrita de abajo */
+      padding: calc(env(safe-area-inset-top) + 1.5vh) 20px calc(env(safe-area-inset-bottom) + 1.5vh);
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
       color: #fff;
       background: linear-gradient(160deg, #2b1055 0%, #7b2ff7 50%, #f72585 100%);
       text-align: center;
     }
-    h1 { font-size: 1.6rem; font-weight: 600; }
-    .fecha { font-size: 0.95rem; opacity: 0.85; }
+    /* Los tamaños se ajustan solos según el alto y ancho de la pantalla */
+    h1 { font-size: clamp(1rem, min(3vh, 6vw), 1.6rem); font-weight: 600; line-height: 1.25; max-width: 420px; }
+    .solo-faltan { margin-top: 1.5vh; }
+    .vacas { font-size: clamp(0.95rem, min(2.6vh, 5vw), 1.4rem); }
+    .fecha { font-size: clamp(0.75rem, 2vh, 0.95rem); opacity: 0.85; }
 
     /* Letrero y corazón */
     .zona-corazon { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .letrero {
-      font-size: 0.9rem;
+      font-size: clamp(0.75rem, 2vh, 0.9rem);
       background: rgba(255, 255, 255, 0.2);
       padding: 6px 14px;
       border-radius: 999px;
     }
     .corazon {
-      font-size: 3.5rem;
+      font-size: clamp(2rem, 6.5vh, 3.5rem);
+      line-height: 1.2;
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
@@ -57,26 +64,26 @@
     .contador {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      gap: clamp(8px, 1.5vh, 14px);
       width: 100%;
       max-width: 360px;
     }
     .caja {
       background: rgba(255, 255, 255, 0.15);
       border-radius: 18px;
-      padding: 20px 10px;
+      padding: clamp(6px, 2vh, 20px) 10px;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
-    .numero { font-size: 3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-    .etiqueta { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
+    .numero { font-size: clamp(1.7rem, 6vh, 3rem); line-height: 1.15; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .etiqueta { font-size: clamp(0.65rem, 1.7vh, 0.85rem); text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
 
     /* Pantalla del día */
     .final { display: none; flex-direction: column; align-items: center; gap: 18px; }
-    .final p { font-size: 1.8rem; font-weight: 700; }
+    .final p { font-size: clamp(1.3rem, 4vh, 1.8rem); font-weight: 700; }
     .final img {
-      width: 100%;
-      max-width: 360px;
+      max-width: min(100%, 360px);
+      max-height: 45vh;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
@@ -101,7 +108,7 @@
       border-radius: 20px;
       box-shadow: 0 10px 40px rgba(247, 37, 133, 0.5);
     }
-    .ventana span { font-size: 0.9rem; opacity: 0.8; }
+    .ventana span { font-size: 1.05rem; max-width: 360px; line-height: 1.4; }
     @keyframes aparecer {
       from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: scale(1); }
@@ -122,7 +129,7 @@
   <div id="cuenta">
     
     <h1>Contando los días, las horas, los minutos y los segundos para verte.</h1>
-    <h1 style="margin-top: 16px;">¡Solo faltan!</h1>
+    <h1 class="solo-faltan">¡Solo faltan!</h1>
         
   </div>
 
@@ -133,9 +140,9 @@
     <div class="caja"><div class="numero" id="segundos">00</div><div class="etiqueta">Segundos</div></div>
   </div>
   
-   <p class="fecha">26 de Diciembre de 2026 · 6:00 a. m.</p>
+  <p class="fecha" id="fecha">26 de diciembre de 2026 · 6:00 a. m.</p>
 
-  <h1>Te Amo como las vacas muuuuuuuuuuuuuuucho 🐮❤️</h1>
+  <h1 class="vacas">Te amo como las vacas muuuuuuuuuuuuuuucho 🐮❤️</h1>
   
   <div class="final" id="final">
     <p>¡Llegó el día! 🎉❤️</p>
@@ -145,7 +152,7 @@
 
   <div class="ventana" id="ventana">
     <img src="foto.jpg" alt="Nuestra foto">
-    <span>Con tigo quiero contruir una vida y un futuro juntos TE AMO ❤️</span>
+    <span>Contigo quiero construir una vida y un futuro juntos. ¡TE AMO! ❤️</span>
   </div>
 
   <script>
@@ -161,6 +168,7 @@
       if (resta <= 0) {
         document.getElementById("contador").style.display = "none";
         document.getElementById("cuenta").style.display = "none";
+        document.getElementById("fecha").style.display = "none";
         document.getElementById("final").style.display = "flex";
         clearInterval(intervalo);
         return;
