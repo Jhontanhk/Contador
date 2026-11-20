@@ -12,6 +12,19 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; overflow: hidden; }
+    /* Color de respaldo: el mismo rosado del final del degradado */
+    html { background: #f72585; }
+    /* El degradado va en una capa fija que cubre TODA la pantalla,
+       incluida la zona de abajo del iPhone, sin repetirse */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 100lvh;
+      min-height: 100%;
+      background: linear-gradient(160deg, #2b1055 0%, #7b2ff7 50%, #f72585 100%);
+      z-index: -1;
+    }
     body {
       height: 100vh;
       height: 100dvh; /* alto real de la pantalla del celular */
@@ -24,7 +37,6 @@
       padding: calc(env(safe-area-inset-top) + 1.5vh) 20px calc(env(safe-area-inset-bottom) + 1.5vh);
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
       color: #fff;
-      background: linear-gradient(160deg, #2b1055 0%, #7b2ff7 50%, #f72585 100%);
       text-align: center;
     }
     /* Los tamaños se ajustan solos según el alto y ancho de la pantalla */
@@ -142,7 +154,7 @@
   
   <p class="fecha" id="fecha">26 de diciembre de 2026 · 6:00 a. m.</p>
 
-  <h1 class="vacas">Te amo como las vacas muuuuuuuuuuuuuuucho 🐮❤️</h1>
+  <h1 class="vacas">Te amo como las vacas: ¡muuuuuuuuuuuuuuucho! 🐮❤️</h1>
   
   <div class="final" id="final">
     <p>¡Llegó el día! 🎉❤️</p>
